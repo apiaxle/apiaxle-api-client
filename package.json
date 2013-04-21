@@ -15,12 +15,13 @@
     "axle"
   ],
   "dependencies": {
-    "underscore": "1.4.2",
-    "async":      "0.2.6"
+    "async": "0.2.6",
+    "lodash": "~1.2.0",
+    "request": "~2.16.6"
   },
   "devDependencies": {
-    "twerp":  "=1.0.7",
-    "sinon":  "1.5.0"
+    "twerp": "=1.0.7",
+    "sinon": "1.5.0"
   },
   "author": "Stuart Quin",
   "license": "BSD"
