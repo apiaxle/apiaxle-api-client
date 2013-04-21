@@ -22,8 +22,6 @@ class Client
 
     options.url = @getPath( path, options.query_params )
 
-    console.log( options )
-
     request options, ( err, res ) =>
       return cb err if err
 
