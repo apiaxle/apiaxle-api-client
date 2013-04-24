@@ -3,8 +3,11 @@ _ = require "lodash"
 request = require "request"
 qs = require "querystring"
 
+{ EventEmitter } = require "events"
+
 class Client
   constructor: ( @host, @port ) ->
+    @emitter = new EventEmitter()
 
   getPath: ( path, query_params ) ->
     url = "http://#{ @host }:#{ @port }#{ path }"
@@ -13,6 +16,9 @@ class Client
 
     return url
 
+  on: ( ) ->
+    @emitter.on arguments...
+
   request: ( path, options, cb ) ->
     options = _.merge options,
       json: true
@@ -20,7 +26,8 @@ class Client
       headers:
         "content-type": "application/json"
 
-    options.url = @getPath( path, options.query_params )
+    options.url = @getPath path, options.query_params
+    @emitter.emit "request", options.url
 
     request options, ( err, res ) =>
       return cb err if err
