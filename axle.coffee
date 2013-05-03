@@ -32,10 +32,9 @@ class Client
     request options, ( err, res ) =>
       return cb err if err
 
+      # the response contains meta and the actual results
       { meta, results } = res.body
-
-      if not meta
-        return cb new Error res.body
+      return cb new Error res.body if not meta
 
       if res.statusCode isnt 200
         { type, message } = results.error
