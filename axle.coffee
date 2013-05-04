@@ -48,6 +48,12 @@ class exports.V1 extends Client
   getKeysByApi: ( api, options={}, cb ) ->
     @request "/v1/api/#{api}/keys", { query_params: options }, cb
 
+  getApi: ( name, options={}, cb ) ->
+    @request "/v1/api/#{ name }", { query_params: options }, cb
+
+  getKey: ( name, options={}, cb ) ->
+    @request "/v1/key/#{ name }", { query_params: options }, cb
+
   getApis: ( options={}, cb ) ->
     @request "/v1/apis", { query_params: options }, cb
 
