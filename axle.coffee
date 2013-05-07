@@ -27,7 +27,7 @@ class Client
         "content-type": "application/json"
 
     options.url = @getPath path, options.query_params
-    @emitter.emit "request", options.url
+    @emitter.emit "request", options
 
     request options, ( err, res ) =>
       return cb err if err
