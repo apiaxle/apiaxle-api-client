@@ -54,6 +54,12 @@ class exports.V1 extends Client
   getKey: ( name, options={}, cb ) ->
     @request "/v1/key/#{ name }", { query_params: options }, cb
 
+  updateApi: ( name, options={}, cb ) ->
+    @request "/v1/api/#{ name }", { method: "PUT", body: options, options }, cb
+
+  updateKey: ( name, options={}, cb ) ->
+    @request "/v1/key/#{ name }", { method: "PUT", body: options, options }, cb
+
   getApis: ( options={}, cb ) ->
     @request "/v1/apis", { query_params: options }, cb
 
