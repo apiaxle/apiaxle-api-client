@@ -20,11 +20,13 @@ class Client
     @emitter.on arguments...
 
   request: ( path, options, cb ) ->
-    options = _.merge options,
+    defaults =
       json: true
       method: "GET"
       headers:
         "content-type": "application/json"
+
+    options = _.merge defaults, options
 
     options.url = @getPath path, options.query_params
     @emitter.emit "request", options
@@ -54,6 +56,12 @@ class exports.V1 extends Client
   getKey: ( name, options={}, cb ) ->
     @request "/v1/key/#{ name }", { query_params: options }, cb
 
+  apiStats: ( name, options={}, cb ) ->
+    @request "/v1/api/#{ name }/stats", { query_params: options }, cb
+
+  keyStats: ( name, options={}, cb ) ->
+    @request "/v1/key/#{ name }/stats", { query_params: options }, cb
+
   updateApi: ( name, options={}, cb ) ->
     @request "/v1/api/#{ name }", { method: "PUT", body: options, options }, cb
 
@@ -62,9 +70,6 @@ class exports.V1 extends Client
 
   getApis: ( options={}, cb ) ->
     @request "/v1/apis", { query_params: options }, cb
-
-  getKey: ( key, cb ) ->
-    @request "/v1/key/#{key}", { query_params: options }, cb
 
   getKeyStats: ( key, options={}, cb ) ->
     @request "/v1/key/#{key}/stats", { query_params: options }, cb
