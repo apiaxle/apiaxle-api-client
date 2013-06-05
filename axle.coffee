@@ -74,8 +74,17 @@ class exports.V1 extends Client
   getApis: ( options={}, cb ) ->
     @request "/v1/apis", { query_params: options }, cb
 
+  getKerings: ( options={}, cb ) ->
+    @request "/v1/keyrings", { query_params: options }, cb
+
+  getKeys: ( options={}, cb ) ->
+    @request "/v1/keys", { query_params: options }, cb
+
   getKeyStats: ( key, options={}, cb ) ->
     @request "/v1/key/#{key}/stats", { query_params: options }, cb
+
+  getKeyringStats: ( key, options={}, cb ) ->
+    @request "/v1/keyring/#{key}/stats", { query_params: options }, cb
 
   getApiStats: ( api, options={}, cb ) ->
     @request "/v1/api/#{api}/stats", { query_params: options }, cb
