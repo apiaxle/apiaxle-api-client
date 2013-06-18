@@ -6,21 +6,14 @@ sinon = require "sinon"
 { V1, Api, Key } = require "../axle"
 
 class AxleTest extends TwerpTest
-  "setup stubs": ( done ) ->
-    @_stubs ||= []
-    done()
-
   stubRespose: ( err, meta, results ) ->
-    return if process.env.NO_STUB
+    fakestub =
+      restore: ( ) ->
 
-    stub = sinon.stub Client::, "request", ( path, options, cb ) ->
+    return fakestub if process.env.NO_STUB
+
+    return sinon.stub Client::, "request", ( path, options, cb ) ->
       return cb err, meta, results
-
-    @_stubs.push stub
-
-  "teardown restore stubs": ( done ) ->
-    stub.restore() for stub in @_stubs
-    done()
 
 class exports.Basics extends AxleTest
   "test object creation": ( done ) ->
@@ -34,21 +27,25 @@ class exports.ApiTest extends AxleTest
     done()
 
   "test finding an API": ( done ) ->
-    @stubRespose null, {}, endPoint: "graph.facebook.com"
+    stub = @stubRespose null, {}, endPoint: "graph.facebook.com"
 
     @axle.findApi "facebook", ( err, api ) =>
+      @ok stub.calledOnce
+      stub.restore()
+
       @ok not err
 
       @ok api
       @equal api.id, "facebook"
       @equal api.endPoint, "graph.facebook.com"
 
-      done 4
+      done 5
 
   "test updating an API": ( done ) ->
-    api = new Api @axle, "facebook", { endPoint: "graph.facebook.com" }
+    api = new Api @axle, "facebook",
+      endPoint: "graph.facebook.com"
 
-    @stubRespose null, {},
+    stub = @stubRespose null, {},
       old:
         apiFormat: "json"
       new:
@@ -57,7 +54,10 @@ class exports.ApiTest extends AxleTest
     api.update { apiFormat: "xml" }, ( err, results ) =>
       @ok not err
 
+      @ok stub.calledOnce
+      stub.restore()
+
       @equal results.new.apiFormat, "xml"
       @equal results.old.apiFormat, "json"
 
-      done 2
+      done 4
