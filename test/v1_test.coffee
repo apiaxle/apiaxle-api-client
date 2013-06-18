@@ -7,6 +7,8 @@ sinon = require "sinon"
 
 class exports.AxleTest extends TwerpTest
   stubRespose: ( err, meta, results ) ->
+    return if process.env.NO_STUB
+
     sinon.stub Client::, "request", ( path, options, cb ) ->
       return cb err, meta, results
 
@@ -21,11 +23,11 @@ class exports.AxleTest extends TwerpTest
     @stubRespose null, {},
       endPoint: "graph.facebook.com"
 
-    axle.findApi "hello", ( err, api ) =>
+    axle.findApi "facebook", ( err, api ) =>
       @isNull err
 
       @ok api
-      @equal api.id, "hello"
+      @equal api.id, "facebook"
       @equal api.endPoint, "graph.facebook.com"
 
       done 5

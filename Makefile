@@ -15,6 +15,9 @@ npminstall:
 test:
 	$(TWERP) $(MY_TWERP_OPTIONS) `find test -name '*_test.coffee'`
 
+stublesstest:
+	NO_STUB=1 $(MAKE) test
+
 clean:
 	@rm -fr $(JS)
 

@@ -13,10 +13,6 @@ class exports.V1 extends Client
     super "/v1#{ path }", options, cb
 
   findApi: ( name, cb ) ->
-    options =
-      query_params:
-        resolve: true
-
-    @request "/v1/api/#{ name }", options, ( err, meta, details ) ->
+    @request "/api/#{ name }", {}, ( err, meta, details ) ->
       return cb err if err
       return cb null, new Api( name, details )
