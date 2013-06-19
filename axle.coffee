@@ -1,9 +1,18 @@
 _ = require "lodash"
 { Client } = require "./lib/client"
 
-class ApiAxleObject extends Client
-  constructor: ( @client, @id, data ) ->
-    _.extend this, data
+class Object extends Client
+  constructor: ( @client, @id, @data ) ->
+    _.extend this, @data
+
+  save: ( cb ) ->
+    options =
+      method: "POST"
+      body: JSON.stringify( @data )
+
+    return @client.request @url(), options, ( err, meta, results ) ->
+      return cb err if err
+      return cb null, results
 
   update: ( new_details, cb ) ->
     options =
@@ -14,11 +23,19 @@ class ApiAxleObject extends Client
       return cb err if err
       return cb null, results
 
-class Key extends ApiAxleObject
+class KeyHolder extends Object
+
+class Key extends Object
   url: -> "/key/#{ @id }"
 
-class Api extends ApiAxleObject
+class Api extends KeyHolder
   url: -> "/api/#{ @id }"
+
+  # keys: ->
+  #   @request "/keys", { resolve: true }, ( err, meta, results ) ->
+  #     return cb err if err
+  #     return for id, details of results
+  #       new Key( @axle, name, details )
 
 class V1 extends Client
   request: ( path, options, cb ) ->
