@@ -83,3 +83,21 @@ class exports.ApiTest extends AxleTest
       stub.restore()
 
       done 2
+
+  "test linking keys to an API": ( done ) ->
+    api = new Api @axle, "facebook-#{ time }",
+      endPoint: "graph.facebook.com"
+
+    stub = @stubRespose null, {}, { qps: 20, qpd: 10 }
+    api.linkkey "hello-#{ time }", ( err, key ) =>
+      @ok not err
+      @ok stub.calledOnce
+      stub.restore()
+
+      @ok key
+
+      @equal key.id, "hello-#{ time }"
+      @equal key.qps, 20
+      @equal key.qpd, 10
+
+      done 6

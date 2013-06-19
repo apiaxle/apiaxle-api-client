@@ -1,16 +1,18 @@
 _ = require "lodash"
 { Client } = require "./lib/client"
 
-class Object extends Client
+class AxleObject extends Client
   constructor: ( @client, @id, @data ) ->
     _.extend this, @data
+
+  request: ( args... ) -> @client.request args...
 
   save: ( cb ) ->
     options =
       method: "POST"
       body: JSON.stringify( @data )
 
-    return @client.request @url(), options, ( err, meta, results ) ->
+    return @request @url(), options, ( err, meta, results ) ->
       return cb err if err
       return cb null, results
 
@@ -19,17 +21,26 @@ class Object extends Client
       method: "PUT"
       body: JSON.stringify( new_details )
 
-    return @client.request @url(), options, ( err, meta, results ) ->
+    return @request @url(), options, ( err, meta, results ) ->
       return cb err if err
       return cb null, results
 
-class KeyHolder extends Object
+class KeyHolder extends AxleObject
 
-class Key extends Object
+class Key extends AxleObject
   url: -> "/key/#{ @id }"
 
 class Api extends KeyHolder
   url: -> "/api/#{ @id }"
+
+  linkkey: ( key_id, cb ) ->
+    options =
+      method: "PUT"
+      body: {}
+
+    @request "#{ @url() }/linkkey/#{ key_id }", options, ( err, meta, res ) =>
+      return cb err if err
+      return cb null, new Key @client, key_id, res
 
   # keys: ->
   #   @request "/keys", { resolve: true }, ( err, meta, results ) ->
