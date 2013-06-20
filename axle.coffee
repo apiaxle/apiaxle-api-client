@@ -1,96 +1,100 @@
-# A wrapper library for interfacing with the API Axle API
 _ = require "lodash"
-request = require "request"
-qs = require "querystring"
+{ Client } = require "./lib/client"
 
-{ EventEmitter } = require "events"
+class AxleObject extends Client
+  constructor: ( @client, @id, @data ) ->
+    _.extend this, @data
 
-class Client
-  constructor: ( @host, @port ) ->
-    @emitter = new EventEmitter()
+  request: ( args... ) -> @client.request args...
 
-  getPath: ( path, query_params ) ->
-    url = "http://#{ @host }:#{ @port }#{ path }"
-    if query_params
-      url += "?#{ qs.stringify query_params }"
+  save: ( cb ) ->
+    options =
+      method: "POST"
+      body: JSON.stringify( @data )
 
-    return url
+    return @request @url(), options, ( err, meta, results ) ->
+      return cb err if err
+      return cb null, results
 
-  on: ( ) ->
-    @emitter.on arguments...
+  update: ( new_details, cb ) ->
+    options =
+      method: "PUT"
+      body: JSON.stringify( new_details )
 
-  request: ( path, options, cb ) ->
-    defaults =
-      json: true
-      method: "GET"
-      headers:
-        "content-type": "application/json"
+    return @request @url(), options, ( err, meta, results ) ->
+      return cb err if err
+      return cb null, results
 
-    options = _.merge defaults, options
+class KeyHolder extends AxleObject
+  linkkey: ( key_id, cb ) ->
+    options =
+      method: "PUT"
+      body: {}
 
-    options.url = @getPath path, options.query_params
-    @emitter.emit "request", options
+    @request "#{ @url() }/linkkey/#{ key_id }", options, ( err, meta, res ) =>
+      return cb err if err
+      return cb null, new Key @client, key_id, res
 
-    request options, ( err, res ) =>
+  keys: ( cb )->
+    options =
+      query_params:
+        resolve: true
+
+    @request "#{ @url() }/keys", options, ( err, meta, results ) =>
       return cb err if err
 
-      # the response contains meta and the actual results
-      { meta, results } = res.body
-      return cb new Error res.body if not meta
+      instanciated = for id, details of results
+        new Key( @client, id, details )
 
-      if res.statusCode isnt 200
-        { type, message } = results.error
-        problem = new Error message
-        problem.type = type
-        return cb problem, meta, null
+      return cb null, instanciated
 
-      return cb null, meta, results
+class Key extends AxleObject
+  url: -> "/key/#{ @id }"
 
-class exports.V1 extends Client
-  getKeysByApi: ( api, options={}, cb ) ->
-    @request "/v1/api/#{api}/keys", { query_params: options }, cb
+class Api extends KeyHolder
+  url: -> "/api/#{ @id }"
 
-  getApi: ( name, options={}, cb ) ->
-    @request "/v1/api/#{ name }", { query_params: options }, cb
+class V1 extends Client
+  request: ( path, options, cb ) ->
+    super "/v1#{ path }", options, cb
 
-  getKey: ( name, options={}, cb ) ->
-    @request "/v1/key/#{ name }", { query_params: options }, cb
+  keys: ( cb ) ->
+    options =
+      query_params:
+        resolve: true
 
-  apiStats: ( name, options={}, cb ) ->
-    @request "/v1/api/#{ name }/stats", { query_params: options }, cb
+    @request "#{ @url() }/keys", options, ( err, meta, results ) =>
+      return cb err if err
 
-  keyStats: ( name, options={}, cb ) ->
-    @request "/v1/key/#{ name }/stats", { query_params: options }, cb
+      instanciated = for id, details of results
+        new Key( @client, id, details )
 
-  updateApi: ( name, options={}, cb ) ->
-    @request "/v1/api/#{ name }", { method: "PUT", body: options, options }, cb
+      return cb null, instanciated
 
-  updateKey: ( name, options={}, cb ) ->
-    @request "/v1/key/#{ name }", { method: "PUT", body: options, options }, cb
+  apis: ( cb ) ->
+    options =
+      query_params:
+        resolve: true
 
-  createKey:( name, options={}, cb ) ->
-    @request "/v1/key/#{ name }", { method: "POST", body: options, options }, cb
+    @request "#{ @url() }/apis", options, ( err, meta, results ) =>
+      return cb err if err
 
-  getApis: ( options={}, cb ) ->
-    @request "/v1/apis", { query_params: options }, cb
+      instanciated = for id, details of results
+        new Api( @client, id, details )
 
-  getKeyrings: ( options={}, cb ) ->
-    @request "/v1/keyrings", { query_params: options }, cb
+      return cb null, instanciated
 
-  getKeys: ( options={}, cb ) ->
-    @request "/v1/keys", { query_params: options }, cb
+  findKey: ( name, cb ) ->
+    @request "/key/#{ name }", {}, ( err, meta, details ) =>
+      return cb err if err
+      return cb null, new Key( this, name, details )
 
-  getKeyStats: ( key, options={}, cb ) ->
-    @request "/v1/key/#{key}/stats", { query_params: options }, cb
+  findApi: ( name, cb ) ->
+    @request "/api/#{ name }", {}, ( err, meta, details ) =>
+      return cb err if err
+      return cb null, new Api( this, name, details )
 
-  getKeyringStats: ( key, options={}, cb ) ->
-    @request "/v1/keyring/#{key}/stats", { query_params: options }, cb
-
-  getApiKeys: ( api, options={}, cb ) ->
-    @request "/v1/api/#{api}/keys", { query_params: options }, cb
-
-  getKeyApis: ( key, options={}, cb ) ->
-    @request "/v1/key/#{key}/apis", { query_params: options }, cb
-
-  getApiStats: ( api, options={}, cb ) ->
-    @request "/v1/api/#{api}/stats", { query_params: options }, cb
+module.exports =
+  Api: Api
+  Key: Key
+  V1: V1
