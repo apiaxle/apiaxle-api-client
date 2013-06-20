@@ -26,13 +26,6 @@ class AxleObject extends Client
       return cb null, results
 
 class KeyHolder extends AxleObject
-
-class Key extends AxleObject
-  url: -> "/key/#{ @id }"
-
-class Api extends KeyHolder
-  url: -> "/api/#{ @id }"
-
   linkkey: ( key_id, cb ) ->
     options =
       method: "PUT"
@@ -42,11 +35,24 @@ class Api extends KeyHolder
       return cb err if err
       return cb null, new Key @client, key_id, res
 
-  # keys: ->
-  #   @request "/keys", { resolve: true }, ( err, meta, results ) ->
-  #     return cb err if err
-  #     return for id, details of results
-  #       new Key( @axle, name, details )
+  keys: ( cb )->
+    options =
+      query_params:
+        resolve: true
+
+    @request "#{ @url() }/keys", options, ( err, meta, results ) =>
+      return cb err if err
+
+      instanciated = for id, details of results
+        new Key( @client, id, details )
+
+      return cb null, instanciated
+
+class Key extends AxleObject
+  url: -> "/key/#{ @id }"
+
+class Api extends KeyHolder
+  url: -> "/api/#{ @id }"
 
 class V1 extends Client
   request: ( path, options, cb ) ->

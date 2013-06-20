@@ -72,7 +72,7 @@ class exports.ApiTest extends AxleTest
 
   "test creating keys on an API": ( done ) ->
     key = new Key @axle, "hello-#{ time }",
-      qps: 20
+      qps: 2
       qpd: 10
 
     stub = @stubRespose null, {}, { qps: 20, qpd: 10 }
@@ -88,7 +88,7 @@ class exports.ApiTest extends AxleTest
     api = new Api @axle, "facebook-#{ time }",
       endPoint: "graph.facebook.com"
 
-    stub = @stubRespose null, {}, { qps: 20, qpd: 10 }
+    stub = @stubRespose null, {}, { qps: 2, qpd: 10 }
     api.linkkey "hello-#{ time }", ( err, key ) =>
       @ok not err
       @ok stub.calledOnce
@@ -97,7 +97,49 @@ class exports.ApiTest extends AxleTest
       @ok key
 
       @equal key.id, "hello-#{ time }"
-      @equal key.qps, 20
+      @equal key.qps, 2
       @equal key.qpd, 10
 
       done 6
+
+  "test listing keys": ( done ) ->
+    api = new Api @axle, "facebook-#{ time }",
+      endPoint: "graph.facebook.com"
+
+    # save another key
+    key = new Key @axle, "hello2-#{ time }",
+      qps: 20
+      qpd: 10
+
+    # save another key
+    stub = @stubRespose null, {}, { qps: 20, qpd: 10 }
+    key.save ( err ) =>
+      @ok not err
+      @ok stub.calledOnce
+      stub.restore()
+
+      # link it to facebook
+      stub = @stubRespose null, {}, {}
+      api.linkkey "hello2-#{ time }", ( err, key ) =>
+        @ok not err
+        @ok stub.calledOnce
+        stub.restore()
+
+        res = {}
+        res["hello2-#{ time }"] = { qpd: 10, qps: 20 }
+        res["hello-#{ time }"] = { qpd: 172800, qps: 2 }
+
+        stub = @stubRespose null, {}, res
+
+        api.keys ( err, [ key1, key2 ] ) =>
+          @ok not err
+          @ok stub.calledOnce
+          stub.restore()
+
+          @equal key1.id, "hello2-#{ time }"
+          @equal key1.qps, 20
+
+          @equal key2.id, "hello-#{ time }"
+          @equal key2.qps, 2
+
+          done 7
