@@ -142,4 +142,4 @@ class exports.ApiTest extends AxleTest
           @equal key2.id, "hello-#{ time }"
           @equal key2.qps, 2
 
-          done 7
+          done 10

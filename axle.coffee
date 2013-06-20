@@ -58,6 +58,32 @@ class V1 extends Client
   request: ( path, options, cb ) ->
     super "/v1#{ path }", options, cb
 
+  keys: ( cb ) ->
+    options =
+      query_params:
+        resolve: true
+
+    @request "#{ @url() }/keys", options, ( err, meta, results ) =>
+      return cb err if err
+
+      instanciated = for id, details of results
+        new Key( @client, id, details )
+
+      return cb null, instanciated
+
+  apis: ( cb ) ->
+    options =
+      query_params:
+        resolve: true
+
+    @request "#{ @url() }/apis", options, ( err, meta, results ) =>
+      return cb err if err
+
+      instanciated = for id, details of results
+        new Api( @client, id, details )
+
+      return cb null, instanciated
+
   findKey: ( name, cb ) ->
     @request "/key/#{ name }", {}, ( err, meta, details ) =>
       return cb err if err
