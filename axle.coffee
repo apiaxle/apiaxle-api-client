@@ -7,6 +7,25 @@ class AxleObject extends Client
 
   request: ( args... ) -> @client.request args...
 
+  getRangeOptions: ( args ) ->
+    from = 0
+    to = 20
+    cb = null
+
+    switch args.length
+      when 4 then [ from, to, options, cb ] = args
+      when 3 then [ from, to, cb ] = args
+      when 2 then [ to, cb ] = args
+      when 1 then [ cb ] = args
+
+    options =
+      query_params:
+        resolve: true
+        from: from
+        to: to
+
+    return [ options, cb ]
+
   save: ( cb ) ->
     options =
       method: "POST"
@@ -49,10 +68,8 @@ class KeyHolder extends AxleObject
       return cb err if err
       return cb null, new Key @client, key_id, res
 
-  keys: ( cb )->
-    options =
-      query_params:
-        resolve: true
+  keys: ( ) ->
+    [ options, cb ] = @getRangeOptions arguments
 
     @request "#{ @url() }/keys", options, ( err, meta, results ) =>
       return cb err if err
@@ -72,10 +89,8 @@ class V1 extends Client
   request: ( path, options, cb ) ->
     super "/v1#{ path }", options, cb
 
-  keys: ( cb ) ->
-    options =
-      query_params:
-        resolve: true
+  keys: ( ) ->
+    [ options, cb ] = @getRangeOptions arguments
 
     @request "#{ @url() }/keys", options, ( err, meta, results ) =>
       return cb err if err
@@ -85,10 +100,8 @@ class V1 extends Client
 
       return cb null, instanciated
 
-  apis: ( cb ) ->
-    options =
-      query_params:
-        resolve: true
+  apis: ( ) ->
+    [ options, cb ] = @getRangeOptions arguments
 
     @request "#{ @url() }/apis", options, ( err, meta, results ) =>
       return cb err if err
@@ -112,3 +125,4 @@ module.exports =
   Api: Api
   Key: Key
   V1: V1
+  AxleObject: AxleObject

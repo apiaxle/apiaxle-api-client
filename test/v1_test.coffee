@@ -4,7 +4,7 @@ time = Date.now()
 
 { TwerpTest } = require "twerp"
 { Client } = require "../lib/client"
-{ V1, Api, Key } = require "../axle"
+{ AxleObject, V1, Api, Key } = require "../axle"
 
 class AxleTest extends TwerpTest
   stubRespose: ( err, meta, results ) ->
@@ -21,6 +21,31 @@ class exports.Basics extends AxleTest
     @ok axle = new V1 "localhost", 3001
 
     done 1
+
+  "test getRangeOptions": ( done ) ->
+    @ok axle = new V1 "localhost", 3001
+    @ok ao = new AxleObject()
+
+    expectants = [
+      [ [ 1, 2, ( ) -> yes ], { from: 1, to: 2, resolve: true }  ]
+      [ [ 23, ( ) -> yes ],   { from: 0, to: 23, resolve: true } ]
+      [ [ ( ) -> yes ],       { from: 0, to: 20, resolve: true } ]
+    ]
+
+    for e in expectants
+      res = ao.getRangeOptions e[0]
+
+      @equal res.length, 2
+      [ options, func ] = res
+
+      # correct options result
+      @deepEqual e[1], options.query_params
+
+      # check the func was correct
+      has_run = func()
+      @equal has_run, true, "Function has_run"
+
+    done 11
 
 class exports.ApiTest extends AxleTest
   "setup axle": ( done ) ->
