@@ -13,7 +13,6 @@ class AxleObject extends Client
     cb = null
 
     switch args.length
-      when 4 then [ from, to, options, cb ] = args
       when 3 then [ from, to, cb ] = args
       when 2 then [ to, cb ] = args
       when 1 then [ cb ] = args
