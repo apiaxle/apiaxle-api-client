@@ -85,6 +85,9 @@ class Key extends AxleObject
 class Api extends KeyHolder
   url: -> "/api/#{ @id }"
 
+class Keyring extends KeyHolder
+  url: -> "/keyring/#{ @id }"
+
 class V1 extends Client
   request: ( path, options, cb ) ->
     super "/v1#{ path }", options, cb
@@ -124,5 +127,6 @@ class V1 extends Client
 module.exports =
   Api: Api
   Key: Key
+  Keyring: Keyring
   V1: V1
   AxleObject: AxleObject
