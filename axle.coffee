@@ -21,17 +21,31 @@ class AxleObject extends Client
       method: "PUT"
       body: JSON.stringify( new_details )
 
-    return @request @url(), options, ( err, meta, results ) ->
-      return cb err if err
-      return cb null, results
+    return @request @url(), options, cb
+
+  delete: ( new_details, cb ) ->
+    options =
+      method: "DELETE"
+      body: JSON.stringify( new_details )
+
+    return @request @url(), options, cb
 
 class KeyHolder extends AxleObject
-  linkkey: ( key_id, cb ) ->
+  linkKey: ( key_id, cb ) ->
     options =
       method: "PUT"
       body: {}
 
     @request "#{ @url() }/linkkey/#{ key_id }", options, ( err, meta, res ) =>
+      return cb err if err
+      return cb null, new Key @client, key_id, res
+
+  unlinkKey: ( key_id, cb ) ->
+    options =
+      method: "PUT"
+      body: {}
+
+    @request "#{ @url() }/unlinkkey/#{ key_id }", options, ( err, meta, res ) =>
       return cb err if err
       return cb null, new Key @client, key_id, res
 

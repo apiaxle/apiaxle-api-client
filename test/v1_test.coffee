@@ -44,7 +44,7 @@ class exports.ApiTest extends AxleTest
         new:
           apiFormat: "xml",
 
-      api.update { apiFormat: "xml" }, ( err, results ) =>
+      api.update { apiFormat: "xml" }, ( err, meta, results ) =>
         @ok not err
 
         @ok stub.calledOnce
@@ -89,7 +89,7 @@ class exports.ApiTest extends AxleTest
       endPoint: "graph.facebook.com"
 
     stub = @stubRespose null, {}, { qps: 2, qpd: 10 }
-    api.linkkey "hello-#{ time }", ( err, key ) =>
+    api.linkKey "hello-#{ time }", ( err, key ) =>
       @ok not err
       @ok stub.calledOnce
       stub.restore()
@@ -120,7 +120,7 @@ class exports.ApiTest extends AxleTest
 
       # link it to facebook
       stub = @stubRespose null, {}, {}
-      api.linkkey "hello2-#{ time }", ( err, key ) =>
+      api.linkKey "hello2-#{ time }", ( err, key ) =>
         @ok not err
         @ok stub.calledOnce
         stub.restore()
