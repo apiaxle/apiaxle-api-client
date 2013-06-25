@@ -183,7 +183,12 @@ class exports.ApiTest extends AxleTest
         stub.restore()
 
         @deepEqual hello1.data, { qps: 20, qpd: 10 }
+        @ok hello1.client
+
         @deepEqual hello2.data, { qps: 10, qpd: 10 }
+        @ok hello2.client
+
         @deepEqual hello3.data, { qps: 20, qpd: 1 }
+        @ok hello3.client
 
         done 7

@@ -77,7 +77,7 @@ class exports.V1 extends Client
     # client e.g. newApi( "blah", {} )
     for type in [ "Api", "Key", "Keyring" ]
       this["new#{ type }"] = ( id, data ) =>
-        return new exports[type]( @client, id, data )
+        return new exports[type]( this, id, data )
 
     super args...
 
