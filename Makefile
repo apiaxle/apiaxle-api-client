@@ -1,4 +1,4 @@
-JS=axle.js lib/client.js
+JS=axle.js lib/client.js index.js
 TWERP=`which twerp`
 
 %.js: %.coffee
