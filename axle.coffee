@@ -1,7 +1,7 @@
 _ = require "lodash"
 { Client } = require "./lib/client"
 
-class AxleObject extends Client
+class AxleObject
   constructor: ( @client, @id, @data ) ->
     _.extend this, @data
 
