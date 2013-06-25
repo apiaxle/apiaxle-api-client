@@ -22,9 +22,8 @@ class exports.Basics extends AxleTest
 
     done 1
 
-  "test getRangeOptions": ( done ) ->
+  "test #getRangeOptions": ( done ) ->
     @ok axle = new V1 "localhost", 3001
-    @ok ao = new AxleObject()
 
     expectants = [
       [ [ 1, 2, ( ) -> yes ], { from: 1, to: 2, resolve: true }  ]
@@ -33,7 +32,7 @@ class exports.Basics extends AxleTest
     ]
 
     for e in expectants
-      res = ao.getRangeOptions e[0]
+      res = axle.getRangeOptions e[0]
 
       @equal res.length, 2
       [ options, func ] = res

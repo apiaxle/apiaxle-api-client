@@ -6,24 +6,6 @@ class exports.AxleObject
 
   request: ( args... ) -> @client.request args...
 
-  getRangeOptions: ( args ) ->
-    from = 0
-    to = 20
-    cb = null
-
-    switch args.length
-      when 3 then [ from, to, cb ] = args
-      when 2 then [ to, cb ] = args
-      when 1 then [ cb ] = args
-
-    options =
-      query_params:
-        resolve: true
-        from: from
-        to: to
-
-    return [ options, cb ]
-
   save: ( cb ) ->
     options =
       method: "POST"
@@ -67,7 +49,7 @@ class KeyHolder extends exports.AxleObject
       return cb null, @client.newKey key_id, res
 
   keys: ( ) ->
-    [ options, cb ] = @getRangeOptions arguments
+    [ options, cb ] = @client.getRangeOptions arguments
 
     @request "#{ @url() }/keys", options, ( err, meta, results ) =>
       return cb err if err
@@ -96,11 +78,29 @@ class exports.V1 extends Client
 
     super args...
 
+  getRangeOptions: ( args ) ->
+    from = null
+    to = null
+    cb = null
+
+    switch args.length
+      when 3 then [ from, to, cb ] = args
+      when 2 then [ to, cb ] = args
+      when 1 then [ cb ] = args
+
+    options =
+      query_params:
+        resolve: true
+        from: ( from or 0 )
+        to: ( to or 20 )
+
+    return [ options, cb ]
+
   request: ( path, options, cb ) ->
     super "/v1#{ path }", options, cb
 
   keys: ( ) ->
-    [ options, cb ] = @getRangeOptions arguments
+    [ options, cb ] = @client.getRangeOptions artguments
 
     @request "#{ @url() }/keys", options, ( err, meta, results ) =>
       return cb err if err
@@ -111,7 +111,7 @@ class exports.V1 extends Client
       return cb null, instanciated
 
   apis: ( ) ->
-    [ options, cb ] = @getRangeOptions arguments
+    [ options, cb ] = @client.getRangeOptions arguments
 
     @request "#{ @url() }/apis", options, ( err, meta, results ) =>
       return cb err if err
