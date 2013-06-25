@@ -1,3 +1,4 @@
+_ = require "lodash"
 sinon = require "sinon"
 
 time = Date.now()
@@ -154,3 +155,35 @@ class exports.ApiTest extends AxleTest
           @equal key2.qps, 2
 
           done 10
+
+  "test all keys": ( done ) ->
+    # save another key
+    key = new Key @axle, "hello3-#{ time }",
+      qps: 20
+      qpd: 10
+
+    # save another key
+    stub = @stubRespose null, {}, { qps: 20, qpd: 10 }
+    key.save ( err ) =>
+      @ok not err
+      @ok stub.calledOnce
+      stub.restore()
+
+      data = {}
+      data["hello1"] = { qps: 20, qpd: 10 }
+      data["hello2"] = { qps: 10, qpd: 10 }
+      data["hello3"] = { qps: 20, qpd: 1 }
+
+      # link it to facebook
+      stub = @stubRespose null, {}, data
+
+      @axle.keys {}, ( err, meta, [ hello1, hello2, hello3 ] ) =>
+        @ok not err
+        @ok stub.calledOnce
+        stub.restore()
+
+        @deepEqual hello1.data, { qps: 20, qpd: 10 }
+        @deepEqual hello2.data, { qps: 10, qpd: 10 }
+        @deepEqual hello3.data, { qps: 20, qpd: 1 }
+
+        done 7
