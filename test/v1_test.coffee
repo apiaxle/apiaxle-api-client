@@ -25,26 +25,13 @@ class exports.Basics extends AxleTest
   "test #getRangeOptions": ( done ) ->
     @ok axle = new V1 "localhost", 3001
 
-    expectants = [
-      [ [ 1, 2, ( ) -> yes ], { from: 1, to: 2, resolve: true }  ]
-      [ [ 23, ( ) -> yes ],   { from: 0, to: 23, resolve: true } ]
-      [ [ ( ) -> yes ],       { from: 0, to: 20, resolve: true } ]
-    ]
+    res = axle.getRangeOptions { query_params: { from: 3 } }
 
-    for e in expectants
-      res = axle.getRangeOptions e[0]
+    @equal res.query_params.from, 3
+    @equal res.query_params.to, 20
+    @equal res.query_params.resolve, true
 
-      @equal res.length, 2
-      [ options, func ] = res
-
-      # correct options result
-      @deepEqual e[1], options.query_params
-
-      # check the func was correct
-      has_run = func()
-      @equal has_run, true, "Function has_run"
-
-    done 11
+    done 4
 
 class exports.ApiTest extends AxleTest
   "setup axle": ( done ) ->
@@ -113,7 +100,7 @@ class exports.ApiTest extends AxleTest
       endPoint: "graph.facebook.com"
 
     stub = @stubRespose null, {}, { qps: 2, qpd: 10 }
-    api.linkKey "hello-#{ time }", ( err, key ) =>
+    api.linkKey "hello-#{ time }", ( err, meta, key ) =>
       @ok not err
       @ok stub.calledOnce
       stub.restore()
@@ -155,7 +142,7 @@ class exports.ApiTest extends AxleTest
 
         stub = @stubRespose null, {}, res
 
-        api.keys ( err, [ key1, key2 ] ) =>
+        api.keys {}, ( err, meta, [ key1, key2 ] ) =>
           @ok not err
           @ok stub.calledOnce
           stub.restore()

@@ -22,6 +22,9 @@ class exports.AxleObject
 
     return @request @url(), options, cb
 
+  stats: ( options, cb ) ->
+    return @request "#{ @url() }/stats", options, cb
+
   delete: ( new_details, cb ) ->
     options =
       method: "DELETE"
@@ -37,7 +40,7 @@ class KeyHolder extends exports.AxleObject
 
     @request "#{ @url() }/linkkey/#{ key_id }", options, ( err, meta, res ) =>
       return cb err if err
-      return cb null, @client.newKey key_id, res
+      return cb null, meta, @client.newKey key_id, res
 
   unlinkKey: ( key_id, cb ) ->
     options =
@@ -46,10 +49,10 @@ class KeyHolder extends exports.AxleObject
 
     @request "#{ @url() }/unlinkkey/#{ key_id }", options, ( err, meta, res ) =>
       return cb err if err
-      return cb null, @client.newKey key_id, res
+      return cb null, meta, @client.newKey key_id, res
 
-  keys: ( ) ->
-    [ options, cb ] = @client.getRangeOptions arguments
+  keys: ( options, cb ) ->
+    options = @client.getRangeOptions options
 
     @request "#{ @url() }/keys", options, ( err, meta, results ) =>
       return cb err if err
@@ -57,7 +60,7 @@ class KeyHolder extends exports.AxleObject
       instanciated = for id, details of results
         new exports.Key( @client, id, details )
 
-      return cb null, instanciated
+      return cb null, meta, instanciated
 
 class exports.Key extends exports.AxleObject
   url: -> "/key/#{ @id }"
@@ -78,48 +81,28 @@ class exports.V1 extends Client
 
     super args...
 
-  getRangeOptions: ( args ) ->
-    from = null
-    to = null
-    cb = null
-
-    switch args.length
-      when 3 then [ from, to, cb ] = args
-      when 2 then [ to, cb ] = args
-      when 1 then [ cb ] = args
-
-    options =
+  getRangeOptions: ( options ) ->
+    default_options =
       query_params:
         resolve: true
-        from: ( from or 0 )
-        to: ( to or 20 )
+        from: 0
+        to: 20
 
-    return [ options, cb ]
+    return _.merge default_options, options
 
   request: ( path, options, cb ) ->
     super "/v1#{ path }", options, cb
 
-  keys: ( ) ->
-    [ options, cb ] = @client.getRangeOptions artguments
+  keys: ( options, cb ) ->
+    options = @getRangeOptions options
 
-    @request "#{ @url() }/keys", options, ( err, meta, results ) =>
+    @request "/keys", options, ( err, meta, results ) =>
       return cb err if err
 
       instanciated = for id, details of results
         @newKey id, details
 
-      return cb null, instanciated
-
-  apis: ( ) ->
-    [ options, cb ] = @client.getRangeOptions arguments
-
-    @request "#{ @url() }/apis", options, ( err, meta, results ) =>
-      return cb err if err
-
-      instanciated = for id, details of results
-        @newApi id, details
-
-      return cb null, instanciated
+      return cb null, meta, instanciated
 
   findKey: ( name, cb ) ->
     @request "/key/#{ name }", {}, ( err, meta, details ) =>
