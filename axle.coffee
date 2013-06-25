@@ -93,6 +93,17 @@ class exports.V1 extends Client
   request: ( path, options, cb ) ->
     super "/v1#{ path }", options, cb
 
+  apis: ( options, cb ) ->
+    options = @getRangeOptions options
+
+    @request "/apis", options, ( err, meta, results ) =>
+      return cb err if err
+
+      instanciated = for id, details of results
+        @newApi id, details
+
+      return cb null, meta, instanciated
+
   keys: ( options, cb ) ->
     options = @getRangeOptions options
 

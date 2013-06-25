@@ -156,6 +156,43 @@ class exports.ApiTest extends AxleTest
 
           done 10
 
+  "test all apis": ( done ) ->
+    # save another api
+    api = new Api @axle, "superduper3-#{ time }",
+      qps: 20
+      qpd: 10
+
+    # save another api
+    stub = @stubRespose null, {}, { qps: 20, qpd: 10 }
+    api.save ( err ) =>
+      @ok not err
+      @ok stub.calledOnce
+      stub.restore()
+
+      data = {}
+      data["superduper1"] = { qps: 20, qpd: 10 }
+      data["superduper2"] = { qps: 10, qpd: 10 }
+      data["superduper3"] = { qps: 20, qpd: 1 }
+
+      # link it to facebook
+      stub = @stubRespose null, {}, data
+
+      @axle.apis {}, ( err, meta, [ superduper1, superduper2, superduper3 ] ) =>
+        @ok not err
+        @ok stub.calledOnce
+        stub.restore()
+
+        @deepEqual superduper1.data, { qps: 20, qpd: 10 }
+        @ok superduper1.client
+
+        @deepEqual superduper2.data, { qps: 10, qpd: 10 }
+        @ok superduper2.client
+
+        @deepEqual superduper3.data, { qps: 20, qpd: 1 }
+        @ok superduper3.client
+
+        done 10
+
   "test all keys": ( done ) ->
     # save another key
     key = new Key @axle, "hello3-#{ time }",
@@ -191,4 +228,4 @@ class exports.ApiTest extends AxleTest
         @deepEqual hello3.data, { qps: 20, qpd: 1 }
         @ok hello3.client
 
-        done 7
+        done 10
