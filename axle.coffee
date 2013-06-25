@@ -1,9 +1,8 @@
 _ = require "lodash"
 { Client } = require "./lib/client"
 
-class AxleObject
-  constructor: ( @client, @id, @data ) ->
-    _.extend this, @data
+class exports.AxleObject
+  constructor: ( @client, @id, @data ) -> _.extend this, @data
 
   request: ( args... ) -> @client.request args...
 
@@ -48,7 +47,7 @@ class AxleObject
 
     return @request @url(), options, cb
 
-class KeyHolder extends AxleObject
+class KeyHolder extends exports.AxleObject
   linkKey: ( key_id, cb ) ->
     options =
       method: "PUT"
@@ -56,7 +55,7 @@ class KeyHolder extends AxleObject
 
     @request "#{ @url() }/linkkey/#{ key_id }", options, ( err, meta, res ) =>
       return cb err if err
-      return cb null, new Key @client, key_id, res
+      return cb null, @client.newKey key_id, res
 
   unlinkKey: ( key_id, cb ) ->
     options =
@@ -65,7 +64,7 @@ class KeyHolder extends AxleObject
 
     @request "#{ @url() }/unlinkkey/#{ key_id }", options, ( err, meta, res ) =>
       return cb err if err
-      return cb null, new Key @client, key_id, res
+      return cb null, @client.newKey key_id, res
 
   keys: ( ) ->
     [ options, cb ] = @getRangeOptions arguments
@@ -74,20 +73,29 @@ class KeyHolder extends AxleObject
       return cb err if err
 
       instanciated = for id, details of results
-        new Key( @client, id, details )
+        new exports.Key( @client, id, details )
 
       return cb null, instanciated
 
-class Key extends AxleObject
+class exports.Key extends exports.AxleObject
   url: -> "/key/#{ @id }"
 
-class Api extends KeyHolder
+class exports.Api extends KeyHolder
   url: -> "/api/#{ @id }"
 
-class Keyring extends KeyHolder
+class exports.Keyring extends KeyHolder
   url: -> "/keyring/#{ @id }"
 
-class V1 extends Client
+class exports.V1 extends Client
+  constructor: ( args... ) ->
+    # quick access to these things without having to initialise a new
+    # client e.g. newApi( "blah", {} )
+    for type in [ "Api", "Key", "Keyring" ]
+      this["new#{ type }"] = ( id, data ) =>
+        return new exports[type]( @client, id, data )
+
+    super args...
+
   request: ( path, options, cb ) ->
     super "/v1#{ path }", options, cb
 
@@ -98,7 +106,7 @@ class V1 extends Client
       return cb err if err
 
       instanciated = for id, details of results
-        new Key( @client, id, details )
+        @newKey id, details
 
       return cb null, instanciated
 
@@ -109,23 +117,16 @@ class V1 extends Client
       return cb err if err
 
       instanciated = for id, details of results
-        new Api( @client, id, details )
+        @newApi id, details
 
       return cb null, instanciated
 
   findKey: ( name, cb ) ->
     @request "/key/#{ name }", {}, ( err, meta, details ) =>
       return cb err if err
-      return cb null, new Key( this, name, details )
+      return cb null, @newKey( name, details )
 
   findApi: ( name, cb ) ->
     @request "/api/#{ name }", {}, ( err, meta, details ) =>
       return cb err if err
-      return cb null, new Api( this, name, details )
-
-module.exports =
-  Api: Api
-  Key: Key
-  Keyring: Keyring
-  V1: V1
-  AxleObject: AxleObject
+      return cb null, @newApi( name, details )
