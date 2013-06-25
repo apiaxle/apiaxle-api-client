@@ -40,7 +40,7 @@ class KeyHolder extends exports.AxleObject
 
     @request "#{ @url() }/linkkey/#{ key_id }", options, ( err, meta, res ) =>
       return cb err if err
-      return cb null, meta, @client.newKey key_id, res
+      return cb null, meta, @client.newKey( key_id, res )
 
   unlinkKey: ( key_id, cb ) ->
     options =
@@ -49,7 +49,7 @@ class KeyHolder extends exports.AxleObject
 
     @request "#{ @url() }/unlinkkey/#{ key_id }", options, ( err, meta, res ) =>
       return cb err if err
-      return cb null, meta, @client.newKey key_id, res
+      return cb null, meta, @client.newKey( key_id, res )
 
   keys: ( options, cb ) ->
     options = @client.getRangeOptions options
@@ -58,7 +58,7 @@ class KeyHolder extends exports.AxleObject
       return cb err if err
 
       instanciated = for id, details of results
-        new exports.Key( @client, id, details )
+        @client.newKey id, details
 
       return cb null, meta, instanciated
 
@@ -76,8 +76,9 @@ class exports.V1 extends Client
     # quick access to these things without having to initialise a new
     # client e.g. newApi( "blah", {} )
     for type in [ "Api", "Key", "Keyring" ]
-      this["new#{ type }"] = ( id, data ) =>
-        return new exports[type]( this, id, data )
+      do( type ) =>
+        this["new#{ type }"] = ( id, data ) =>
+          return new exports[type]( this, id, data )
 
     super args...
 
