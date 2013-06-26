@@ -70,7 +70,7 @@ class exports.ApiTest extends AxleTest
   "test finding an API": ( done ) ->
     stub = @stubRespose null, {}, endPoint: "graph.facebook.com"
 
-    @axle.findApi "facebook-#{ time }", ( err, api ) =>
+    @axle.findApi "facebook-#{ time }", ( err, meta, api ) =>
       @ok stub.calledOnce
       stub.restore()
 
