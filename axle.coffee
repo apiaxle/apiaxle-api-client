@@ -13,7 +13,7 @@ class exports.AxleObject
 
     return @request @url(), options, ( err, meta, results ) ->
       return cb err if err
-      return cb null, results
+      return cb null, meta, results
 
   update: ( new_details, cb ) ->
     options =
