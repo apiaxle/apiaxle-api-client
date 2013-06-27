@@ -20,7 +20,15 @@ class exports.AxleObject
       method: "PUT"
       body: JSON.stringify( new_details )
 
-    return @request @url(), options, cb
+    return @request @url(), options, ( err, meta, details ) =>
+      new_thing = details.new
+      old_thing = details.old
+
+      # repopulate the data for this item
+      @data = new_thing
+      _.extend this, @data
+
+      return cb err, meta, details
 
   stats: ( options, cb ) ->
     return @request "#{ @url() }/stats", options, cb

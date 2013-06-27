@@ -55,5 +55,6 @@ If you don't want the cost of finding the API, just do this:
 
     # be sure to discard `api` once you've done this. newApi is now
     # populated with the correct details
-    api.update { apiFormat: "XML" }, ( err, meta, newApi ) ->
-      console.log "Updated with a new Api object"
+    api.update { apiFormat: "XML" }, ( err, meta, details ) ->
+      console.log "New: #{ details.new }, Old: #{ details.old }"
+      console.log "Now I point to the right thing: #{ details.apiFormat }"
