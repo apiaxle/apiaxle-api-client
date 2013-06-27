@@ -1,2 +1,5 @@
 .*.swp
 node_modules
+/axle.js
+/index.js
+/lib/client.js

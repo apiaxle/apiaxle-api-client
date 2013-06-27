@@ -1,18 +1,19 @@
 {
-  "name": "node-axle",
-  "version": "0.0.6",
-  "description": "A client library for API Axle",
-  "main": "axle",
+  "name": "apiaxle-api-client",
+  "version": "0.0.1",
+  "description": "A client library for the ApiAxle API",
+  "main": "index",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "cake test"
+    "test": "make test"
   },
   "repository": "",
   "keywords": [
-    "APIAxle",
-    "axle"
+    "ApiAxle",
+    "Axle",
+    "API"
   ],
   "dependencies": {
     "async": "0.2.6",
@@ -23,6 +24,6 @@
     "twerp": "=1.0.7",
     "sinon": "1.5.0"
   },
-  "author": "Stuart Quin",
+  "author": "Phil Jackson",
   "license": "BSD"
 }
