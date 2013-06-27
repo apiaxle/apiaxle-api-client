@@ -4,8 +4,7 @@ sinon = require "sinon"
 time = Date.now()
 
 { TwerpTest } = require "twerp"
-{ Client } = require "../lib/client"
-{ AxleObject, V1, Api, Key } = require "../axle"
+{ Client, AxleObject, V1, Api, Key } = require "../index"
 
 class AxleTest extends TwerpTest
   stubRespose: ( err, meta, results ) ->
