@@ -73,6 +73,22 @@ class KeyHolder extends exports.AxleObject
 class exports.Key extends exports.AxleObject
   url: -> "/key/#{ @id }"
 
+  linkedApis: ( options, cb ) ->
+    default_options =
+      query_params:
+        resolve: true
+
+    options = _.merge default_options, options
+
+    @request "#{ @url() }/apis", options, ( err, meta, results ) =>
+      console.log( results )
+      return cb err if err
+
+      instanciated = for id, details of results
+        @client.newApi id, details
+
+      return cb null, meta, instanciated
+
 class exports.Api extends KeyHolder
   url: -> "/api/#{ @id }"
 
