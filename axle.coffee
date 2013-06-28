@@ -81,7 +81,6 @@ class exports.Key extends exports.AxleObject
     options = _.merge default_options, options
 
     @request "#{ @url() }/apis", options, ( err, meta, results ) =>
-      console.log( results )
       return cb err if err
 
       instanciated = for id, details of results
