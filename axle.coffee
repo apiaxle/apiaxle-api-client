@@ -12,6 +12,10 @@ class exports.AxleObject
       body: JSON.stringify( @data )
 
     return @request @url(), options, ( err, meta, results ) ->
+      # repopulate the data for this item
+      @data = results
+      _.extend this, @data
+
       return cb err if err
       return cb null, meta, results
 
@@ -90,6 +94,9 @@ class exports.Key extends exports.AxleObject
 
 class exports.Api extends KeyHolder
   url: -> "/api/#{ @id }"
+
+  charts: ( options, cb ) ->
+    @request "#{ @url() }/keycharts", options, cb
 
 class exports.Keyring extends KeyHolder
   url: -> "/keyring/#{ @id }"
