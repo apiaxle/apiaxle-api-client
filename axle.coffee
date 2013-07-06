@@ -92,6 +92,9 @@ class exports.Key extends exports.AxleObject
 
       return cb null, meta, instanciated
 
+  charts: ( options, cb ) ->
+    @request "#{ @url() }/apicharts", options, cb
+
 class exports.Api extends KeyHolder
   url: -> "/api/#{ @id }"
 
