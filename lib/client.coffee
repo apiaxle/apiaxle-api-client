@@ -18,7 +18,7 @@ class exports.Client
   on: ( ) ->
     @emitter.on arguments...
 
-  request: ( path, options, cb ) ->
+  rawRequest: ( path, options, cb ) ->
     defaults =
       json: true
       method: "GET"
@@ -32,10 +32,13 @@ class exports.Client
 
     request options, ( err, res ) =>
       return cb err if err
+      return cb null, res.body
 
+  request: ( path, options, cb ) ->
+    @rawRequest path, options, ( body ) ->
       # the response contains meta and the actual results
-      { meta, results } = res.body
-      return cb new Error res.body if not meta
+      { meta, results } = body
+      return cb new Error body if not meta
 
       if res.statusCode isnt 200
         { type, message } = results.error
