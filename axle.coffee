@@ -124,13 +124,15 @@ class exports.V1 extends Client
         from: 0
         to: 20
 
-    return _.merge default_options, options
+    return _.merge default_options, { query_params: options }
 
   request: ( path, options, cb ) ->
     super "/v1#{ path }", options, cb
 
   apis: ( options, cb ) ->
     options = @getRangeOptions options
+
+    console.log( options )
 
     @request "/apis", options, ( err, meta, results ) =>
       return cb err if err
