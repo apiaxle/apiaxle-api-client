@@ -162,6 +162,6 @@ class exports.V1 extends Client
       return cb null, meta, @newApi( name, details )
 
   ping: ( cb ) ->
-    @rawRequest "/ping", {}, ( err, body ) =>
+    @rawRequest "/ping", {}, ( err, body ) ->
       return cb err if err
       return cb null, body
