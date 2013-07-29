@@ -153,6 +153,17 @@ class exports.V1 extends Client
 
       return cb null, meta, instanciated
 
+  keyrings: ( options, cb ) ->
+    options = @getRangeOptions options
+
+    @request "/keyrings", options, ( err, meta, results ) =>
+      return cb err if err
+
+      instanciated = for id, details of results
+        @newKey id, details
+
+      return cb null, meta, instanciated
+
   findKey: ( name, cb ) ->
     @request "/key/#{ name }", {}, ( err, meta, details ) =>
       return cb err if err
