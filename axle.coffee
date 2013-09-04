@@ -103,8 +103,8 @@ class exports.Api extends KeyHolder
   charts: ( options, cb ) ->
     @request "#{ @url() }/keycharts", options, cb
 
-  performanceStats: ( options, cb ) ->
-    return @request "#{ @url() }/stats/performance", options, cb
+  statsTimers: ( options, cb ) ->
+    return @request "#{ @url() }/stats/timers", options, cb
 
 class exports.Keyring extends KeyHolder
   url: -> "/keyring/#{ @id }"
