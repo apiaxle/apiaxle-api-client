@@ -135,8 +135,6 @@ class exports.V1 extends Client
   apis: ( options, cb ) ->
     options = @getRangeOptions options
 
-    console.log( options )
-
     @request "/apis", options, ( err, meta, results ) =>
       return cb err if err
 
