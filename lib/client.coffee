@@ -5,11 +5,11 @@ qs = require "querystring"
 { EventEmitter } = require "events"
 
 class exports.Client
-  constructor: ( @host, @port ) ->
+  constructor: ( @host ) ->
     @emitter = new EventEmitter()
 
   getPath: ( path, query_params ) ->
-    url = "http://#{ @host }:#{ @port }#{ path }"
+    url = "http://#{ @host }#{ path }"
     if query_params
       url += "?#{ qs.stringify query_params }"
 
