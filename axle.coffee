@@ -129,8 +129,14 @@ class exports.V1 extends Client
 
     return _.merge default_options, { query_params: options }
 
+  rawRequest: ( path, options, cb ) ->
+    super "/v1#{ path }", options, cb
+
   request: ( path, options, cb ) ->
     super "/v1#{ path }", options, cb
+
+  ping: ( cb ) ->
+    @rawRequest "/ping", {}, cb
 
   apis: ( options, cb ) ->
     options = @getRangeOptions options

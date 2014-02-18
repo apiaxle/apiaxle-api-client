@@ -18,6 +18,15 @@ class exports.Client
   on: ( ) ->
     @emitter.on arguments...
 
+  rawRequest: ( path, options, cb ) ->
+    @emitter.emit "request", options
+
+    options.url = @getPath path, options.query_params
+
+    request options, ( err, res ) =>
+      return cb err if err
+      return cb null, res.body
+
   request: ( path, options, cb ) ->
     defaults =
       json: true
@@ -27,10 +36,7 @@ class exports.Client
 
     options = _.merge defaults, options
 
-    options.url = @getPath path, options.query_params
-    @emitter.emit "request", options
-
-    request options, ( err, res ) =>
+    @rawRequest options, ( err, res ) =>
       return cb err if err
 
       # the response contains meta and the actual results
