@@ -24,7 +24,7 @@ class exports.Client
 
     request options, ( err, res ) =>
       return cb err if err
-      return cb null, res.body
+      return cb null, res
 
   request: ( path, options, cb ) ->
     defaults =
@@ -35,7 +35,7 @@ class exports.Client
 
     options = _.merge defaults, options
 
-    @rawRequest options, ( err, res ) =>
+    @rawRequest path, options, ( err, res ) =>
       return cb err if err
 
       # the response contains meta and the actual results
@@ -46,6 +46,6 @@ class exports.Client
         { type, message } = results.error
         problem = new Error message
         problem.type = type
-        return cb problem, meta, null
+        return cb problem, meta, results
 
       return cb null, meta, results
