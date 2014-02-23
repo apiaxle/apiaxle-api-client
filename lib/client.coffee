@@ -20,9 +20,12 @@ class exports.Client
 
   rawRequest: ( path, options, cb ) ->
     options.url = @getPath path, options.query_params
-    @emitter.emit "request", options
 
+    start = Date.now()
     request options, ( err, res ) =>
+      options.time = Date.now() - start
+      @emitter.emit "request", options
+
       return cb err if err
       return cb null, res
 

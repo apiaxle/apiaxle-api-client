@@ -133,7 +133,7 @@ class exports.V1 extends Client
     super "/v1#{ path }", options, cb
 
   request: ( path, options, cb ) ->
-    super "/v1#{ path }", options, cb
+    super path, options, cb
 
   ping: ( cb ) ->
     @rawRequest "/ping", {}, cb
