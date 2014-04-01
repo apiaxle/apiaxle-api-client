@@ -3,6 +3,9 @@ language: "node_js"
 node_js:
   - "0.8"
   - "0.10"
+env:
+  - APIAXLE_API_LOCATION="http://test.apiaxle.com:81/"
 before_script:
   - "make npminstall"
+  - "make"
 script: "make test"

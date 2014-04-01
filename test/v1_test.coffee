@@ -4,7 +4,8 @@ should = require "should"
 describe "The Client", ->
   v1 = null
 
-  before -> v1 = new V1 "http://localhost:3000"
+  before ->
+    v1 = new V1( process.env.APIAXLE_API_LOCATION or "http://localhost:3000" )
 
   it "should have a valid client", ( done ) ->
     v1.should.be.ok
