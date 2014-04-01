@@ -132,9 +132,6 @@ class exports.V1 extends Client
   rawRequest: ( path, options, cb ) ->
     super "/v1#{ path }", options, cb
 
-  request: ( path, options, cb ) ->
-    super path, options, cb
-
   ping: ( cb ) ->
     @rawRequest "/ping", {}, cb
 
@@ -170,6 +167,12 @@ class exports.V1 extends Client
         @newKey id, details
 
       return cb null, meta, instanciated
+
+  modelDocs: ( cb ) ->
+    @request "/docs/models", {}, cb
+
+  controllerDocs: ( cb ) ->
+    @request "/docs/controllers", {}, cb
 
   findKey: ( name, cb ) ->
     @request "/key/#{ name }", {}, ( err, meta, details ) =>

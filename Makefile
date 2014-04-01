@@ -1,5 +1,4 @@
 JS=axle.js lib/client.js index.js
-TWERP=`which twerp`
 
 %.js: %.coffee
 	coffee -b -c $<
@@ -12,11 +11,9 @@ publish: clean $(JS)
 npminstall:
 	npm install
 
-test:
-	$(TWERP) $(MY_TWERP_OPTIONS) `find test -name '*_test.coffee'`
-
-stublesstest:
-	NO_STUB=1 $(MAKE) test
+test: $(JS)
+	mocha --compilers coffee:coffee-script/register \
+		-b -u tdd --recursive -R spec -C test
 
 clean:
 	@rm -fr $(JS)

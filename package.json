@@ -21,7 +21,8 @@
     "request": "~2.16.6"
   },
   "devDependencies": {
-    "twerp": "=1.0.7",
+    "mocha": "~1.18.2",
+    "should": "~3.2.0",
     "sinon": "1.5.0"
   },
   "author": "Phil Jackson",
