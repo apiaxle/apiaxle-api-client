@@ -176,10 +176,10 @@ class exports.V1 extends Client
 
   findKey: ( name, cb ) ->
     @request "/key/#{ name }", {}, ( err, meta, details ) =>
-      return cb err if err
+      return cb err, meta if err
       return cb null, meta, @newKey( name, details )
 
   findApi: ( name, cb ) ->
     @request "/api/#{ name }", {}, ( err, meta, details ) =>
-      return cb err if err
+      return cb err, meta if err
       return cb null, meta, @newApi( name, details )
