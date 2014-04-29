@@ -2,7 +2,13 @@ _ = require "lodash"
 { Client } = require "./lib/client"
 
 class exports.AxleObject
-  constructor: ( @client, @id, @data ) -> _.extend this, @data
+  constructor: ( @client, @id, @data ) ->
+    _.extend this, @data
+
+    # 'fancy' dates
+    for type in [ "createdAt", "updatedAt" ]
+      if seconds = this[type]
+        this[type] = new Date seconds
 
   request: ( args... ) -> @client.request args...
 
