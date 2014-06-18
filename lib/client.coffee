@@ -41,7 +41,6 @@ class exports.Client
     @rawRequest path, options, ( err, res ) =>
       return cb err if err
 
-      # the response contains meta and the actual results
       { meta, results } = res.body
       return cb new Error res.body if not meta
 

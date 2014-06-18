@@ -45,10 +45,10 @@ class exports.AxleObject
   stats: ( options, cb ) ->
     return @request "#{ @url() }/stats", options, cb
 
-  delete: ( new_details, cb ) ->
+  delete: ( cb ) ->
     options =
       method: "DELETE"
-      body: JSON.stringify( new_details )
+      body: {}
 
     return @request @url(), options, cb
 
