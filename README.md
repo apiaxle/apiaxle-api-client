@@ -8,7 +8,7 @@ distrubuted as JS.
 ## Initialisation
 
     { V1 } = require "apiaxle-api-client"
-    v1 = new V1 "127.0.0.1", 3000
+    v1 = new V1 "http://127.0.0.1:3000"
 
 ## Creating new things
 
